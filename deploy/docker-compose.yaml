@@ -1,0 +1,80 @@
+name: bitbucket
+
+services:
+  bitbucket:
+    image: "atlassian/bitbucket:7.11.1"
+    restart: always
+    environment:
+      JDBC_DRIVER: org.postgresql.Driver
+      JDBC_URL: 'jdbc:postgresql://db:5432/bitbucket'
+      JDBC_USER: bitbucket
+      JDBC_PASSWORD: 'password'
+      SERVER_SCHEME: 'https'
+      SERVER_SECURE: 'true'
+      SERVER_PROXY_PORT: '443'
+      SERVER_PROXY_NAME: 'bitbucket.domain.com'
+      JVM_MINIMUM_MEMORY: 512m
+      JVM_MAXIMUM_MEMORY: 2048m
+
+    volumes:
+      - bitbucket-Data:/var/atlassian/application-data/bitbucket
+      - ${PWD}/extra/crack/atlassian-extras-decoder-v2-3.4.1.jar:/opt/atlassian/bitbucket/app/WEB-INF/lib/atlassian-extras-decoder-v2-3.4.1.jar
+    ports:
+     - 7990:7990
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  db:
+    image: postgres:9.6
+    container_name: bitbucket-database
+    hostname: bitbucket-database
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 'password'
+      POSTGRES_USER: bitbucket
+      POSTGRES_DB: bitbucket
+    volumes:
+      - bitbucketDbVolume:/var/lib/postgresql/data
+
+  nginx:
+    restart: always
+    image: nginx:alpine
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://nginx/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+    volumes:
+      - ${PWD}/deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${PWD}/deploy/nginx/ssl/cert.pem:/etc/nginx/ssl/cert.pem:ro
+      - ${PWD}/deploy/nginx/ssl/key.pem:/etc/nginx/ssl/key.pem:ro
+    ports:
+    - 80:80
+    - 443:443
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+
+volumes:
+ bitbucket-Data:
+   name: bitbucket-Data
+   driver: local
+   driver_opts:
+     o: bind
+     type: none
+     device: /mnt/bitbucket/bitbucket-data
+
+ bitbucketDbVolume:
+   name: bitbucketDbVolume
+   driver: local
+   driver_opts:
+     o: bind
+     type: none
+     device: /mnt/bitbucket/bitbucket-db-volume

@@ -1,0 +1,3 @@
+[submodule "extra/crack"]
+	path = extra/crack
+	url = https://github.com/IAlexEgorov/AtlassianCrack.git
