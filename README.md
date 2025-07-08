@@ -18,6 +18,7 @@ rm -rf .git
 2. Change deploy/docker-compose.yaml. Replace `/mnt/bitbucket/bitbucket-data` and `/mnt/bitbucket/bitbucket-db-volume` to the place where the data must be stored.
 3. Change deploy/nginx.com. Replace `bitbucket.domain.com` to your own domain name.
 4. Change deploy/ssl/. Setup your certificate for domain in `cert.pem` file and key to the `key.pem`.
+5. Change deploy/docker-compose.yaml. Replace POSTGRES_PASSWORD.
 
 ### Run all
 ```
