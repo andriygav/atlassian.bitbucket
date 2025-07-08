@@ -8,6 +8,10 @@ To deploy own bitbucket you need make several actions.
 ```
 git clone --recurse-submodules https://github.com/andriygav/atlassian.bitbucket.git
 ```
+After clonning it's recomender remove git linking for security reasone:
+```
+rm -rf .git
+```
 
 ### Change some data in the deploy
 1. Change deploy/docker-compose.yaml. Replace `bitbucket.domain.com` to your own domain name.
